@@ -1,12 +1,12 @@
 from itertools import tee, zip_longest
-from typing import Iterable, Iterator, List, Optional, Tuple
+from typing import ClassVar, Iterable, Iterator, List, Optional, Tuple
 from janome.tokenizer import Token
 
 
 class Chunk(object):
-    small_kana = 'ぁぃぅぇぉゃゅょゎァィゥェォャュョヮ' # except っ, that is a separated mora
+    small_kana: ClassVar[str] = 'ぁぃぅぇぉゃゅょゎァィゥェォャュョヮ' # except っ, that is a separated mora
 
-    def __init__(self, tokens: List[Token]):
+    def __init__(self, tokens: List[Token]) -> None:
         self.tokens = tokens
 
     def __str__(self) -> str:
@@ -14,8 +14,9 @@ class Chunk(object):
 
     @property
     def morae(self) -> List[str]:
-        ret = []
+        ret: List[str] = []
 
+        mora: str
         mora = ''
         a: str
         b: Optional[str]
@@ -37,7 +38,7 @@ class Chunk(object):
 
 
 def chunkize(tokens: Iterable[Token]) -> List[Chunk]:
-    ret = []
+    ret: List[Chunk] = []
 
     def pos(token: Token, string: str) -> bool:
         return token.part_of_speech.startswith(string)
@@ -48,7 +49,7 @@ def chunkize(tokens: Iterable[Token]) -> List[Chunk]:
     for a, b in pairwise(tokens):
         # cf.
         # Chunkize rules:
-        # https://www.ieice.org/jpn/event/FIT/pdf/d/2014/E-005`.pdf
+        # https://www.ieice.org/jpn/event/FIT/pdf/d/2014/E-005.pdf
         # part-of-speech types in the IPA system:
         # http://www.unixuser.org/~euske/doc/postag/#chasen
         # https://taku910.github.io/mecab/posid.html
