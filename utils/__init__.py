@@ -32,7 +32,8 @@ class ChunkFilter(TokenFilter):
         a: Token
         b: Token
         chunk: List[Token] = []
-        for a, b in pairwise(tokens):
+        token_pairs: Iterator[Tuple[Token, Optional[Token]]] = pairwise(tokens)
+        for a, b in token_pairs:
             # cf.
             # Chunkize rules:
             # https://www.ieice.org/jpn/event/FIT/pdf/d/2014/E-005.pdf
@@ -59,7 +60,7 @@ class ChunkFilter(TokenFilter):
                     pos(a, 'フィラー') or \
                     pos(a, '未知語'):
                 yield chunk
-                chunk = []
+                chunk.clear()
             else:
                 continue
 
