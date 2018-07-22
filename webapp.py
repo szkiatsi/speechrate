@@ -19,5 +19,10 @@ def analyze() -> Response:
     )
 
 
+@app.route('/', methods=['GET'])
+def homepage() -> Response:
+    return app.send_static_file('index.html')
+
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
