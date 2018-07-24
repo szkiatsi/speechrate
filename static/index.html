@@ -3,8 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="static/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+      }
+    </style>
+    <link href="static/css/bootstrap-responsive.min.css" rel="stylesheet" media="screen">
 </head>
-<body>
-<p>Hello world!</p>
+
+<body onload="brython(1)">
+
+<div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container">
+            <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="brand" href="#">Speech Rate</a>
+            <div class="nav-collapse collapse">
+                <ul class="nav">
+                    <li class="active"><a href="#">Home</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </div><!-- /.nav-collapse -->
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <h1>Speech Rate Analyzer</h1>
+    <p>Unter construction.</p>
+</div><!-- /container -->
+
+<div class="container">
+    <form>
+        <fieldset>
+            <label>Input text:</label>
+            <textarea id="text_original" class="input-block-level"  rows="10"></textarea>
+            <button id="analyze" type="submit" class="btn">Analyze</button>
+            <label>Result:</label>
+            <textarea id="text_result" class="input-block-level"  rows="10" disabled></textarea>
+        </fieldset>
+    </form>
+</div>
+
+
+
+<script src="http://code.jquery.com/jquery.js"></script>
+<script src="static/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="static/js/brython.js"></script>
+<script type="text/javascript" src="static/js/brython_stdlib.js"></script>
+<script type="text/python" src="static/js/speech_rate.py"></script>
 </body>
 </html>
