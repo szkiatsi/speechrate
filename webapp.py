@@ -6,7 +6,7 @@ from janomeutils import ChunkFilter, token_to_morae
 
 
 app = Flask(__name__)
-tokenizer = Tokenizer()
+tokenizer = Tokenizer(mmap=True)
 analyzer = Analyzer(tokenizer=tokenizer, token_filters=[ChunkFilter()])
 
 
@@ -15,7 +15,8 @@ def analyze() -> Response:
     sentence: str = request.get_data(as_text=True)
     chunks: Iterable[List[Token]] = analyzer.analyze(sentence)
     return jsonify(
-        [[{'surface': token.surface, 'morae': list(token_to_morae(token))} for token in chunk] for chunk in chunks]
+        [[{'surface': token.surface, 'morae': list(token_to_morae(token)), 'pos': token.part_of_speech}
+          for token in chunk] for chunk in chunks]
     )
 
 

@@ -1,16 +1,50 @@
 from itertools import tee, zip_longest
-from typing import Iterable, Iterator, List, Optional, Tuple
+import math
+from typing import Dict, Iterable, Iterator, List, Optional, Tuple
 from janome.tokenfilter import TokenFilter
 from janome.tokenizer import Token
 
 
 def token_to_morae(token: Token) -> Iterator[str]:
-    small_kana: str = 'ぁぃぅぇぉゃゅょゎァィゥェォャュョヮ' # except っ, that is a separated mora
-    mora: str = ''
+    small_kana: str = 'ぁぃぅぇぉゃゅょゎァィゥェォャュョヮ'  # except っ, that is a separated mora
+    number_yomi_1: Dict[int, str] = \
+            {0: 'ゼロ', 1: 'イチ', 2: 'ニ', 3: 'サン', 4: 'ヨン', 5: 'ゴ', 6: 'ロク', 7: 'ナナ', 8: 'ハチ', 9: 'キュー'}
+    number_yomi_4: List[Tuple[int, str]] = [(1000, 'セン'), (100, 'ヒャク'), (10, 'ジュウ'), (1, '')]
+    number_yomi_5: List[Tuple[int, str]] = [(1_0000_0000_0000, 'チョー'), (1_0000_0000, 'オク'), (1_0000, 'マン'), (1, '')]
+    morae: str = ''
+    phonetic: str = ''
     a: str
     b: Optional[str]
-    for a, b in pairwise(token.phonetic):
-        mora += a
+
+    if token.part_of_speech == '名詞,数,*,*' and token.phonetic == '*':
+        try:
+            num: int = int(token.surface)
+            if num == 0:
+                phonetic = number_yomi_1[0]
+            elif num < 1_0000_0000_0000_0000:
+                num_tmp: int = num
+                for num_5, yomi_5 in number_yomi_5:
+                    num_9999 = math.floor(num_tmp / num_5)
+                    if num_9999:
+                        num_9999_tmp: int = num_9999
+                        for num_4, yomi_4 in number_yomi_4:
+                            num_1 = int(math.floor(num_9999_tmp / num_4))
+                            if num_1:
+                                if num_1 != 1 or num_4 == 1:
+                                    phonetic += number_yomi_1[num_1]
+                                phonetic += yomi_4
+                                num_9999_tmp -= num_1 * num_4
+                        phonetic += yomi_5
+                        num_tmp -= num_9999 * num_5
+            else:
+                phonetic = token.phonetic
+        except ValueError:
+            phonetic = token.phonetic
+    else:
+        phonetic = token.phonetic
+
+    for a, b in pairwise(phonetic):
+        morae += a
 
         """
         バ : 1 mora
@@ -20,8 +54,8 @@ def token_to_morae(token: Token) -> Iterator[str]:
         if b and a not in small_kana and b in small_kana:
             continue
         else:
-            yield mora
-            mora = ''
+            yield morae
+            morae = ''
 
 
 class ChunkFilter(TokenFilter):
