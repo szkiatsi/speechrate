@@ -1,6 +1,8 @@
 from itertools import tee, zip_longest
 import math
 from typing import Dict, Iterable, Iterator, List, Optional, Tuple
+import jaconv
+import jaconv.conv_table
 from janome.tokenfilter import TokenFilter
 from janome.tokenizer import Token
 
@@ -9,7 +11,7 @@ def token_to_morae(token: Token) -> Iterator[str]:
     small_kana: str = 'ぁぃぅぇぉゃゅょゎァィゥェォャュョヮ'  # except っ, that is a separated mora
     number_yomi_1: Dict[int, str] = \
             {0: 'ゼロ', 1: 'イチ', 2: 'ニ', 3: 'サン', 4: 'ヨン', 5: 'ゴ', 6: 'ロク', 7: 'ナナ', 8: 'ハチ', 9: 'キュー'}
-    number_yomi_4: List[Tuple[int, str]] = [(1000, 'セン'), (100, 'ヒャク'), (10, 'ジュウ'), (1, '')]
+    number_yomi_4: List[Tuple[int, str]] = [(1000, 'セン'), (100, 'ヒャク'), (10, 'ジュー'), (1, '')]
     number_yomi_5: List[Tuple[int, str]] = [(1_0000_0000_0000, 'チョー'), (1_0000_0000, 'オク'), (1_0000, 'マン'), (1, '')]
     morae: str = ''
     phonetic: str = ''
@@ -40,6 +42,13 @@ def token_to_morae(token: Token) -> Iterator[str]:
                 phonetic = token.phonetic
         except ValueError:
             phonetic = token.phonetic
+    elif token.phonetic == '*':
+        if all(ord(c) in jaconv.conv_table.K2H_TABLE.keys() for c in token.surface):
+            phonetic = token.surface
+        elif all(ord(c) in jaconv.conv_table.H2K_TABLE.keys() for c in token.surface):
+            phonetic = jaconv.hira2kata(token.surface)
+        else:
+            phonetic = token.surface
     else:
         phonetic = token.phonetic
 

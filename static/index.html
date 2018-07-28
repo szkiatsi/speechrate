@@ -4,59 +4,69 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="static/css/bootstrap.min.css" rel="stylesheet" media="screen">
-    <style>
-      body {
-        padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
-      }
-    </style>
-    <link href="static/css/bootstrap-responsive.min.css" rel="stylesheet" media="screen">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 </head>
 
 <body onload="brython(1)">
 
-<div class="navbar navbar-inverse navbar-fixed-top">
-    <div class="navbar-inner">
-        <div class="container">
-            <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="brand" href="#">Speech Rate</a>
-            <div class="nav-collapse collapse">
-                <ul class="nav">
-                    <li class="active"><a href="#">Home</a></li>
-                    <li><a href="#about">About</a></li>
-                    <li><a href="#contact">Contact</a></li>
-                </ul>
-            </div><!-- /.nav-collapse -->
-        </div>
-    </div>
-</div>
-
-<div class="container">
-    <h1>Speech Rate Analyzer</h1>
-    <p>Unter construction.</p>
-</div><!-- /container -->
+<h1>Speech Rate Analyzer</h1>
+<p>Under construction.</p>
 
 <div class="container">
     <form>
-        <fieldset>
+        <div class="form-group">
             <label>Input text:</label>
-            <textarea id="text_original" class="input-block-level"  rows="10"></textarea>
-            <button id="analyze" type="button" class="btn">Analyze</button>
+            <textarea id="text_original" class="form-control"  rows="5"></textarea>
+
+        </div>
+        <button id="analyze" type="button" class="btn btn-primary">Analyze</button>
+        <div class="form-group">
             <label>Result:</label>
-            <textarea id="text_result" class="input-block-level"  rows="10" disabled></textarea>
-        </fieldset>
+            <textarea id="text_result" class="form-control"  rows="5" disabled></textarea>
+
+        </div>
     </form>
+    <form class="form-inline row">
+        <button id="start_stop" type="button" class="btn btn-info" disabled>
+            <span id="start_stop_text">Start</span>
+        </button>
+        <div class="input-group col">
+            <div class="input-group-prepend">
+                <span class="input-group-text">Volume</span>
+            </div>
+            <input id="volume" type="number" class="form-control" disabled>
+        </div>
+        <div class="input-group col">
+            <div class="input-group-prepend">
+                <span class="input-group-text">Talking</span>
+            </div>
+            <input id="talking" type="number" class="form-control" disabled>
+            <div class="input-group-append">
+                <span class="input-group-text">s</span>
+            </div>
+        </div>
+        <div class="input-group col">
+            <div class="input-group-prepend">
+                <span class="input-group-text">Silence</span>
+            </div>
+            <input id="silence" type="number" class="form-control" disabled>
+            <div class="input-group-append">
+                <span class="input-group-text">s</span>
+            </div>
+        </div>
+        </div>
+    </form>
+
+    <p><span id="result"></span></p>
+
+    <canvas id="graph" style="width: 100%; height: 100px"></canvas>
 </div>
 
-
-
-<script src="http://code.jquery.com/jquery.js"></script>
-<script src="static/js/bootstrap.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+<script src="static/js/smoothie.js"></script>
 <script type="text/javascript" src="static/js/brython.js"></script>
 <script type="text/javascript" src="static/js/brython_stdlib.js"></script>
 <script type="text/python" src="static/py/speech_rate.py"></script>
