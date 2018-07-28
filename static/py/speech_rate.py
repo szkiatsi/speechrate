@@ -124,7 +124,7 @@ if getUserMedia:
         'googHighpassFilter': False
     }, 'optional': []}
 
-    @bind(document['start_stop'], 'click)
+    @bind(document['start_stop'], 'click')
     def start_stop(ev):
         global gum_stream
         global smoothie
