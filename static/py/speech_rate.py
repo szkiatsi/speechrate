@@ -124,15 +124,14 @@ if getUserMedia:
         'googHighpassFilter': False
     }, 'optional': []}
 
-    @bind(document['start_stop'], 'click')
+    @bind(document['start_stop'], 'click)
     def start_stop(ev):
         global gum_stream
         global smoothie
         if not gum_stream or not gum_stream.active:
             document['start_stop_text'].text = 'Stop'
             if not smoothie:
-                smoothie = window.SmoothieChart.new(
-                 {'millisPerPixel': 10, 'responsive': True})
+                smoothie = window.SmoothieChart.new({'millisPerPixel': 10})
                 smoothie.addTimeSeries(line, {'lineWidth': 1, 'strokeStyle': '#ffffff'})
             smoothie.streamTo(document['graph'])
             getUserMedia(constraints, process_stream, lambda err: print('error: {}'.format(err.text)))
