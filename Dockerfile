@@ -16,8 +16,8 @@ RUN FILE_ID=14CK0rkep2nvVpfGCJu_QQFf2PUkcI6BN && \
     python -c "from janome.tokenizer import Tokenizer; Tokenizer(mmap=True)" && \
     rm ${FILE_NAME}
 
-COPY janomeutils .
-COPY static .
+COPY janomeutils janomeutils
+COPY static static
 COPY webapp.py .
 
 EXPOSE 5000
