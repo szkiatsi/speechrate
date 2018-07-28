@@ -35,9 +35,74 @@ def analyze(ev):
 line = window.TimeSeries.new()
 
 
-def process_audio(ev):
-    now = datetime.now()
+class SpeechRate(object):
+    def __init__(self, volume_threshold=0, time_threshold=0):
+        self.t_pause = 0
+        self.t_pause_tmp = 0
+        self.t_talking = 0
+        self.is_talking = False
+        self.last_clipped = None
+        self.volume_threshold = volume_threshold
+        self.time_threshold = time_threshold
 
+    def reset(self):
+        self.__init__()
+
+    def add_volume(self, v):
+        now = datetime.now()
+        if not self.last_clipped:
+            if v > self.volume_threshold:
+                self.is_talking = True
+                self.last_clipped = now
+        else:
+            t_since_last_clip = (now - self.last_clipped).microseconds
+            if v > self.volume_threshold:
+                if self.is_talking:
+                    self.t_talking += t_since_last_clip
+                else:
+                    self.t_pause_tmp += t_since_last_clip
+                    if self.t_pause_tmp > self.time_threshold:
+                        self.t_pause += self.t_pause_tmp
+                    else:
+                        self.t_talking += self.t_pause_tmp
+                    self.t_pause_tmp = 0
+                    self.is_talking = True
+            else:
+                if not self.is_talking:
+                    self.t_pause_tmp += t_since_last_clip
+                else:
+                    self.t_talking += t_since_last_clip
+                    self.is_talking = False
+            self.last_clipped = now
+
+    @property
+    def t_talking_sec(self):
+        return self.t_talking / 1000000
+
+    @property
+    def t_pause_sec(self):
+        return self.t_pause / 1000000
+
+    @property
+    def t_all(self):
+        return self.t_talking + self.t_pause
+
+    @property
+    def t_all_sec(self):
+        return self.t_all / 1000000
+
+    def morae_per_sec(self, len_of_morae):
+        return len_of_morae / self.t_talking * 1000000
+
+    @property
+    def pause_ratio(self):
+        return self.t_pause / self.t_all
+
+
+speech_rate = SpeechRate()
+
+
+def process_audio(ev):
     buf = ev.inputBuffer.getChannelData(0)
     buf_length = buf.length
     sum_ = 0
@@ -53,36 +118,10 @@ def process_audio(ev):
 
     document['volume'].value = volume
     line.append(window.Date.new().getTime(), volume)
+    speech_rate.add_volume(volume)
 
-    global last_clipped
-    global t_pause
-    global t_pause_tmp
-    global t_talking
-    global is_talking
-    if not last_clipped:
-        if volume > 0:
-            is_talking = True
-            last_clipped = now
-    else:
-        t_since_last_clip = (now - last_clipped).microseconds
-        if volume > 0:
-            if is_talking:
-                t_talking += t_since_last_clip
-            else:
-                t_pause += t_pause_tmp
-                t_pause += t_since_last_clip
-                t_pause_tmp = 0
-                is_talking = True
-        else:
-            if not is_talking:
-                t_pause_tmp += t_since_last_clip
-            else:
-                t_talking += t_since_last_clip
-                is_talking = False
-        last_clipped = now
-
-    document['talking'].value = t_talking / 1000000
-    document['silence'].value = t_pause / 1000000
+    document['talking'].value = speech_rate.t_talking_sec
+    document['silence'].value = speech_rate.t_pause_sec
 
 
 def process_stream(stream):
@@ -91,18 +130,7 @@ def process_stream(stream):
     global mic
     global js_node
 
-    global t_pause
-    global t_pause_tmp
-    global t_talking
-    global is_talking
-    global last_clipped
-
-    t_pause = 0
-    t_pause_tmp = 0
-    t_talking = 0
-    is_talking = False
-    last_clipped = None
-
+    speech_rate.reset()
     gum_stream = stream
     audio_ctx = window.AudioContext.new()
     js_node = audio_ctx.createScriptProcessor(256, 1, 1)
@@ -146,9 +174,10 @@ if getUserMedia:
             del gum_stream
             smoothie.stop()
             document['start_stop_text'].text = 'Start'
-            t_all = (t_talking + t_pause) / 1000000
+            # t_all = (t_talking + t_pause) / 1000000
             document['result'].text = \
-                f'duration: {t_all}. morae/sec: {len(morae)/t_talking*1000000}, pause ratio: {t_pause/1000000/t_all}'
+                f'duration: {speech_rate.t_all_sec}. morae/sec: {speech_rate.morae_per_sec(len(morae))}, pause ratio: ' \
+                f'{speech_rate.pause_ratio} '
 
 
 else:
