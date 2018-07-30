@@ -61,10 +61,10 @@ def on_complete(req):
                     else:
                         time_str = '→'
                     if int(sec_sum%60%5) == 0 and time_str != '→':
-                        html_time = html.STRONG()
-                        html_time <= html.DIV(time_str, Class='time', id=f'time_{mora_no}')
+                        html_time_class = 'time time-5sec'
                     else:
-                        html_time = html.DIV(time_str, Class='time', id=f'time_{mora_no}')
+                        html_time_class = 'time'
+                    html_time = html.DIV(time_str, Class=html_time_class, id=f'time_{mora_no}')
                     html_times <= html_time
                     html_morae <= html.DIV(mora, Class='mora', id=f'mora_{mora_no}')
                     mora_no += 1

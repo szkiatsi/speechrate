@@ -32,6 +32,10 @@
  	align-items: center;
     text-align: justify;
 }
+.time-5sec {
+    font-weight: bold;
+    background-color: yellow
+}
 .punc { background-color: lightgray }
 .surface, .pos {
     width: 100%;
