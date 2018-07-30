@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Speech Time Planner</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link href="https://atsushi.cf/jumbotron.css" rel="stylesheet">
+    <link href="/static/css/mora.css" rel="stylesheet">
+</head>
+
+<body onload="brython(1)">
+
+<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark not-print">
+    <a class="navbar-brand" href="https://atsushi.cf/">atsushi's lab</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"
+            aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="https://atsushi.cf/">Home</a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="/">SpeechRate <span class="sr-only">(current)</span></a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<main role="main">
+
+
+    <div class="container-fluid">
+        <div class="row not-print">
+            <h1 class="col-12">Speech Time Planner</h1>
+            <p class="col-12">
+            Todoリスト
+            <ul>
+            <li>時間が3分間決め打ちなのを設定できるようにする</li>
+	    <li>。は4モーラ、他の記号は2モーラとみなしているが、これも決め打ちなので設定できるようにする</li>
+        </ul>
+            </p>
+        </div>
+        <form class="row not-print">
+            <div class="form-group col-md-6">
+                <label>Input text:</label>
+                <textarea id="text_original" class="form-control" rows="5"></textarea>
+                <button id="analyze" type="button" class="btn btn-primary">Analyze</button>
+            </div>
+            <div class="form-group col-md-6">
+                <label>Result:</label>
+                <textarea id="text_result" class="form-control" rows="5" disabled></textarea>
+
+            </div>
+        </form>
+        <div id="speech_rate"></div>
+        <div class="row" id="result">
+        </div>
+        <hr class="not-print">
+    </div>
+
+</main>
+
+<footer class="container not-print">
+    <p>&copy; 2018 SUZUKI Atsushi</p>
+</footer>
+
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+        integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+        integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/smoothie/1.34.0/smoothie.min.js"
+        integrity="sha256-s4pCizM36ibu/qMLSJHZLwhA5sV0/Jn1J/1TrzryEKQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/brython/3.6.2/brython.min.js"
+        integrity="sha256-3xvNKGzxlM/uuFHABLeiVZtmmFIPoU//A01tSDM3YAo=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/brython/3.6.2/brython_stdlib.js"
+        integrity="sha256-GywU0MKIEG7DIqQuHaBld3DWzYaMjt9Qqz9uOY7eZjY=" crossorigin="anonymous"></script>
+<script type="text/python" src="/static/py/planner.py"></script>
+</body>
+</html>

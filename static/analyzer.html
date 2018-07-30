@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Speech Rate</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link href="https://atsushi.cf/jumbotron.css" rel="stylesheet">
+</head>
+
+<body onload="brython(1)">
+
+<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+    <a class="navbar-brand" href="https://atsushi.cf/">atsushi's lab</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"
+            aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="https://atsushi.cf/">Home</a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="/">SpeechRate <span class="sr-only">(current)</span></a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<main role="main">
+
+
+    <div class="container-fluid">
+        <div class="row">
+            <h1 class="col-12">Speech Rate Analyzer</h1>
+            <p class="col-12">
+	    つかいかた:
+	    <ol>
+		    <li>「原稿を入力」のボックスに計測したい原稿を入力</li>
+		    <li>モーラ数計算ボタンを押す</li>
+		    <li>測定開始ボタンを押す。初回はマイクの使用許可を求められるので許可をする</li>
+		    <li>原稿を読み上げる</li>
+		    <li>測定終了ボタンを押すと結果表示される</li>
+	    </ol>
+	     
+
+	</p>
+	<p class="col-12">
+	以下にソースとDockerイメージを公開しています<br>
+                <a href="https://github.com/szkiatsi/speechrate">Github</a> <a
+                    href="https://hub.docker.com/r/szkiatsi/speechrate/">Docker Hub</a>
+            </p>
+        </div>
+        <form class="row">
+            <div class="form-group col-md-6">
+                <label>原稿を入力</label>
+                <textarea id="text_original" class="form-control" rows="5"></textarea>
+            </div>
+            <div class="form-group col-md-6">
+                <label>モーラ解析結果</label>
+                <textarea id="text_result" class="form-control" rows="5" disabled></textarea>
+
+            </div>
+            <div class="btn-toolbar">
+                <div class="btn-group col-md-auto">
+                    <button id="analyze" type="button" class="btn btn-primary">モーラ数計算</button>
+                    <button id="start_stop" type="button" class="btn btn-info" disabled>
+                        <span id="start_stop_text">測定開始</span>
+                    </button>
+                </div>
+                <!--
+                <div class="input-group col-md col-sm-4">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">volume</span>
+                    </div>
+                    <input id="volume" type="number" class="form-control" disabled>
+                </div>
+                <div class="input-group col-md col-sm-4">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">talking</span>
+                    </div>
+                    <input id="talking" type="number" class="form-control" disabled>
+                    <div class="input-group-append">
+                        <span class="input-group-text">s</span>
+                    </div>
+                </div>
+                <div class="input-group col-md col-sm-4">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">silence</span>
+                    </div>
+                    <input id="silence" type="number" class="form-control" disabled>
+                    <div class="input-group-append">
+                        <span class="input-group-text">s</span>
+                    </div>
+                </div>
+                -->
+            </div>
+        </form>
+        <div class="row">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col">原稿のモーラ数</th>
+                    <th scope="col">スピーチ時間(秒)</th>
+                    <th scope="col">モーラ数/分</th>
+                    <th scope="col">音量</th>
+                    <th scope="col">発声時間(秒)</th>
+                    <th scope="col">ポーズ時間(秒)</th>
+                    <th scope="col">ポーズの割合</th>
+                    <th scope="col">モーラ数/分(ポーズ除く)</th>
+
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td id="morae"></td>
+                    <td id="duration"></td>
+                    <td id="morae_per_min"></td>
+                    <td id="volume"></td>
+                    <td id="talking"></td>
+                    <td id="pause"></td>
+                    <td id="pause_ratio"></td>
+                    <td id="morae_per_min_except_pause"></td>
+                </tr>
+                </tbody>
+            </table>
+            <p><span id="result"></span></p>
+        </div>
+        <div class="row">
+            <canvas id="graph" width="640" height="120"></canvas>
+        </div>
+
+        <hr>
+    </div>
+
+    <!--
+    <style>
+        .modal-dialog {
+            overflow-y: scroll !important;
+        }
+        .modal-body {
+            height: calc(100vh - 200px);
+            overflow-y: auto;
+        }
+
+    </style>
+
+
+    <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#test_modal">test</button>
+
+    <div class="modal fade" id="test_modal">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Test</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+
+                </div>
+                <div class="modal-body">
+                    <p id="modal_sentence"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    -->
+</main>
+
+<footer class="container">
+    <p>&copy; 2018 SUZUKI Atsushi</p>
+</footer>
+
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+        integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+        integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/smoothie/1.34.0/smoothie.min.js"
+        integrity="sha256-s4pCizM36ibu/qMLSJHZLwhA5sV0/Jn1J/1TrzryEKQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/brython/3.6.2/brython.min.js"
+        integrity="sha256-3xvNKGzxlM/uuFHABLeiVZtmmFIPoU//A01tSDM3YAo=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/brython/3.6.2/brython_stdlib.js"
+        integrity="sha256-GywU0MKIEG7DIqQuHaBld3DWzYaMjt9Qqz9uOY7eZjY=" crossorigin="anonymous"></script>
+<script type="text/python" src="/static/py/speech_rate.py"></script>
+</body>
+</html>
