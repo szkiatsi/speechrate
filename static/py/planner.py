@@ -24,7 +24,7 @@ def on_complete(req):
         sentence_no = 0
         token_no = 0
         mora_no = 0
-        duration = 180
+        duration = int(document['duration'].value)
 
         count_kuten = len([token for chunk in result for token in chunk if token['pos'] == '記号,句点,*,*'])
         count_punc = len([token for chunk in result for token in chunk if token['pos'] != '記号,句点,*,*' and
@@ -35,7 +35,7 @@ def on_complete(req):
         speech_rate = len(morae) / duration
         speech_rate_with_pause = (len(morae) + count_kuten * pause_kuten + count_punc * pause_punc) / duration
         document['speech_rate'].clear()
-        document['speech_rate'].text = '{0:.2f} morae/min, pause ratio: {1:.2%}'.format(
+        document['speech_rate'].text = '{0:.2f} モーラ/分, ポーズの割合: {1:.2%}'.format(
             speech_rate_with_pause * 60, 1 - speech_rate / speech_rate_with_pause)
         sec_per_mora = 1 / speech_rate_with_pause
         sec_sum = 0

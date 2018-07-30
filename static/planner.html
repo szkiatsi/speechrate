@@ -38,22 +38,43 @@
     <div class="container-fluid">
         <div class="row not-print">
             <h1 class="col-12">Speech Time Planner</h1>
+	    <p class="col-12">
+	    つかいかた:
+	    <ol>
+		    <li>「原稿を入力」のボックスにテキストを入力</li>
+		    <li>「スピーチ時間」にスピーチの長さを入力</li>
+		    <li>「作成」ボタンを押すと、画面下部に話す速度の概算と時間配分が表示される</li>
+	    </ol>
+	    </p>
             <p class="col-12">
             Todoリスト
             <ul>
-            <li>時間が3分間決め打ちなのを設定できるようにする</li>
-	    <li>。は4モーラ、他の記号は2モーラとみなしているが、これも決め打ちなので設定できるようにする</li>
+            <li><s>時間が3分間決め打ちなのを設定できるようにする</s></li>
+	    <li>「。」は4モーラ、他の記号は2モーラとみなしているが、これも決め打ちなので設定できるようにする</li>
         </ul>
             </p>
         </div>
         <form class="row not-print">
             <div class="form-group col-md-6">
-                <label>Input text:</label>
+                <label>原稿を入力:</label>
                 <textarea id="text_original" class="form-control" rows="5"></textarea>
-                <button id="analyze" type="button" class="btn btn-primary">Analyze</button>
+                <div class="btn-toolbar" role="toolbar">
+                    <div class="input-group col-8">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">スピーチ時間</div>
+                        </div>
+                        <input type="number" class="form-control" id="duration" value="180">
+                        <div class="input-group-append">
+                            <div class="input-group-text">秒</div>
+                        </div>
+                    </div>
+                    <div class="btn-group col-4" role="group">
+                        <button id="analyze" type="button" class="btn btn-primary">作成</button>
+                    </div>
+                </div>
             </div>
             <div class="form-group col-md-6">
-                <label>Result:</label>
+                <label>モーラ解析結果:</label>
                 <textarea id="text_result" class="form-control" rows="5" disabled></textarea>
 
             </div>
