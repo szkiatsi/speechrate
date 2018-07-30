@@ -1,0 +1,34 @@
+.sentence {
+    display: inline-flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+.token {
+    --base: 2.5em;
+	outline: 1px solid black;
+	margin:  0.5em 0 0.5em 0;
+    display: flex;
+    flex-direction: column;
+  	align-self: flex-start
+  }
+.morae {
+    display: flex;
+  }
+.mora, .punc, .time {
+	width: var(--base);
+	height: var(--base);
+  	outline: 1px dotted black;
+ 	display: flex;
+ 	justify-content: center;
+ 	align-items: center;
+    text-align: justify;
+}
+.punc { background-color: lightgray }
+.surface, .pos {
+    width: 100%;
+    height: calc(var(--base) * 0.75);
+    display: flex;
+    outline: 1px dotted black;
+ 	justify-content: center;
+ 	align-items: center;
+  }

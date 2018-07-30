@@ -48,7 +48,7 @@ def token_to_morae(token: Token) -> Iterator[str]:
         elif all(ord(c) in jaconv.conv_table.H2K_TABLE.keys() for c in token.surface):
             phonetic = jaconv.hira2kata(token.surface)
         else:
-            phonetic = token.surface
+            phonetic = token.phonetic
     else:
         phonetic = token.phonetic
 

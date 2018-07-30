@@ -6,7 +6,7 @@ from types import SimpleNamespace
 from browser import ajax, alert, bind, document, window, html
 
 
-morae = 0
+morae = []
 
 
 def on_complete(req):
@@ -17,7 +17,9 @@ def on_complete(req):
                  if not (token['pos'].startswith('記号,') or not token['morae'])]
         #    ' || '.join([' | '.join([', '.join(token['morae']) for token in chunk]) for chunk in result])
         document['text_result'].value = ', '.join(morae)
-        document['text_result'].value += '\nmorae: ' + str(len(morae))
+        document['morae'].clear()
+        document['morae'].text = str(len(morae))
+        # document['modal_sentence'].text += document['text_original'].value
         del document['start_stop'].attrs['disabled']
     else:
         alert('error')
@@ -36,7 +38,7 @@ line = window.TimeSeries.new()
 
 
 class SpeechRate(object):
-    def __init__(self, volume_threshold=0, time_threshold=0):
+    def __init__(self, volume_threshold=10, time_threshold=0):
         self.t_pause = 0
         self.t_pause_tmp = 0
         self.t_talking = 0
@@ -92,6 +94,9 @@ class SpeechRate(object):
         return self.t_all / 1000000
 
     def morae_per_sec(self, len_of_morae):
+        return len_of_morae / self.t_all * 1000000
+
+    def morae_per_sec_except_pause(self, len_of_morae):
         return len_of_morae / self.t_talking * 1000000
 
     @property
@@ -111,17 +116,20 @@ def process_audio(ev):
         x = buf[i]
         sum_ += pow(x, 2)
 
-    rms = math.sqrt(sum_ / buf_length) * 100
+    rms = math.sqrt(sum_ / buf_length)
 
     # volume_ = max(rms, volume * averaging)
-    volume = round(rms)
+    volume = round(rms * 1000)
 
-    document['volume'].value = volume
-    line.append(window.Date.new().getTime(), volume)
-    speech_rate.add_volume(volume)
-
-    document['talking'].value = speech_rate.t_talking_sec
-    document['silence'].value = speech_rate.t_pause_sec
+    if is_running:
+        document['volume'].clear()
+        document['volume'].text = volume
+        line.append(window.Date.new().getTime(), volume)
+        speech_rate.add_volume(volume)
+        document['talking'].clear()
+        document['talking'].text = '{0:.2f}'.format(speech_rate.t_talking_sec)
+        document['pause'].clear()
+        document['pause'].text = '{0:.2f}'.format(speech_rate.t_pause_sec)
 
 
 def process_stream(stream):
@@ -156,14 +164,21 @@ if getUserMedia:
     def start_stop(ev):
         global gum_stream
         global smoothie
+        global is_running
         if not gum_stream or not gum_stream.active:
-            document['start_stop_text'].text = 'Stop'
+            document['start_stop_text'].text = '測定終了'
+            document['duration'].clear()
+            document['morae_per_min'].clear()
+            document['pause_ratio'].clear()
+            document['morae_per_min_except_pause'].clear()
             if not smoothie:
-                smoothie = window.SmoothieChart.new({'millisPerPixel': 10})
+                smoothie = window.SmoothieChart.new({'millisPerPixel': 5, 'grid': {'millisPerLine': 100}})
                 smoothie.addTimeSeries(line, {'lineWidth': 1, 'strokeStyle': '#ffffff'})
             smoothie.streamTo(document['graph'])
+            is_running = True
             getUserMedia(constraints, process_stream, lambda err: print('error: {}'.format(err.text)))
         else:
+            is_running = False
             js_node.disconnect()
             mic.disconnect()
             audio_ctx.close()
@@ -173,17 +188,13 @@ if getUserMedia:
             gum_stream.getTracks()[0].stop
             del gum_stream
             smoothie.stop()
-            document['start_stop_text'].text = 'Start'
-            # t_all = (t_talking + t_pause) / 1000000
-            document['result'].text = \
-                f'duration: {speech_rate.t_all_sec}. morae/sec: {speech_rate.morae_per_sec(len(morae))}, pause ratio: ' \
-                f'{speech_rate.pause_ratio} '
+            document['start_stop_text'].text = '測定開始'
+            document['duration'].text = '{0:.2f}'.format(speech_rate.t_all_sec)
+            document['morae_per_min'].text = '{0:.2f}'.format(speech_rate.morae_per_sec(len(morae)) * 60)
+            document['morae_per_min_except_pause'].text = '{0:.2f}'.format(speech_rate.morae_per_sec_except_pause(len(morae)) * 60)
+            document['pause_ratio'].text = '{0:.2%}'.format(speech_rate.pause_ratio)
 
 
 else:
     print('getUserMedia not supported')
-
-
-
-
 
